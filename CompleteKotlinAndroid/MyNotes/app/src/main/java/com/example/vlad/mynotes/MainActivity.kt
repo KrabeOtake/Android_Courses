@@ -1,6 +1,7 @@
 package com.example.vlad.mynotes
 
 import android.app.SearchManager
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -23,11 +24,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        listNotes.add(Node(1, "Meet professor", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."))
-        listNotes.add(Node(2, "Meet Friend", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."))
-        listNotes.add(Node(3, "Meet DOOM", "Lorem ipsum dolor sit amet, consectetur adipiscing elit"))
+        // Add dummy data
+        listNotes.add(Node(1," meet professor","Create any pattern of your own - tiles, texture, skin, wallpaper, comic effect, website background and more.  Change any artwork of pattern you found into different flavors and call them your own."))
+        listNotes.add(Node(2," meet doctor","Create any pattern of your own - tiles, texture, skin, wallpaper, comic effect, website background and more.  Change any artwork of pattern you found into different flavors and call them your own."))
+        listNotes.add(Node(3," meet friend","Create any pattern of your own - tiles, texture, skin, wallpaper, comic effect, website background and more.  Change any artwork of pattern you found into different flavors and call them your own."))
 
-        var myNotesAdapter = MyNotesAdapter(listNotes)
+        Toast.makeText(this,"onCreate",Toast.LENGTH_LONG).show()
+        //Load from DB
+        LoadQuery("%")
+    }
+
+    fun LoadQuery(title:String){
+        var dbManger = DBManager(this)
+        val selectionArgs = arrayOf(title)
+        val projection = arrayOf("ID", "Title", "Description")
+        val cursor = dbManger.Query(projection, "Title like ?", selectionArgs, "Title")
+        listNotes.clear()
+        if(cursor.moveToFirst()){
+            do{
+                val ID = cursor.getInt(cursor.getColumnIndex("ID"))
+                val Title = cursor.getString(cursor.getColumnIndex("Title"))
+                val Desc = cursor.getString(cursor.getColumnIndex("Description"))
+
+                listNotes.add(Node(ID, Title, Desc))
+
+            }while (cursor.moveToNext())
+        }
+        val myNotesAdapter = MyNotesAdapter(listNotes)
         lvNotes.adapter = myNotesAdapter
     }
 
@@ -42,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query:String): Boolean {
                 Toast.makeText(applicationContext, query, Toast.LENGTH_SHORT).show()
+                LoadQuery("%" + query + "%")
                 return false
             }
 
@@ -55,12 +79,13 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId){
             R.id.addNote ->{
-                var intent = Intent(this, AddNotesActivity::class.java)
+                val intent = Intent(this, AddNotesActivity::class.java)
                 startActivity(intent)
             }
         }
         return super.onOptionsItemSelected(item)
     }
+
     inner class MyNotesAdapter: BaseAdapter{
 
         var listNotesAdapter = ArrayList<Node>()
@@ -69,8 +94,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            var myView = layoutInflater.inflate(R.layout.ticket, null)
-            var myNode = listNotesAdapter[position]
+            val myView = layoutInflater.inflate(R.layout.ticket, null)
+            val myNode = listNotesAdapter[position]
             myView.textView.text = myNode.nodeTitle
             myView.textView2.text = myNode.nodeDesc
 
