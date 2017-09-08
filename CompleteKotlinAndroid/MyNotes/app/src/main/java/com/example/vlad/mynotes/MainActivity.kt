@@ -34,6 +34,12 @@ class MainActivity : AppCompatActivity() {
         LoadQuery("%")
     }
 
+    override  fun onResume() {
+        super.onResume()
+        LoadQuery("%")
+        Toast.makeText(this,"onResume",Toast.LENGTH_LONG).show()
+    }
+
     fun LoadQuery(title:String){
         var dbManger = DBManager(this)
         val selectionArgs = arrayOf(title)
@@ -50,15 +56,17 @@ class MainActivity : AppCompatActivity() {
 
             }while (cursor.moveToNext())
         }
-        val myNotesAdapter = MyNotesAdapter(listNotes)
+        val myNotesAdapter = MyNotesAdapter(this, listNotes)
         lvNotes.adapter = myNotesAdapter
+
+
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
         menuInflater.inflate(R.menu.main_menu, menu)
 
-        val searchView = menu!!.findItem(R.id.app_bar_search).actionView as SearchView
+        val searchView = menu.findItem(R.id.app_bar_search).actionView as SearchView
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
@@ -89,8 +97,10 @@ class MainActivity : AppCompatActivity() {
     inner class MyNotesAdapter: BaseAdapter{
 
         var listNotesAdapter = ArrayList<Node>()
-        constructor(listNotesAdapter:ArrayList<Node>): super(){
+        var context:Context? = null
+        constructor(context:Context, listNotesAdapter:ArrayList<Node>): super(){
             this.listNotesAdapter = listNotesAdapter
+            this.context = context
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -98,7 +108,19 @@ class MainActivity : AppCompatActivity() {
             val myNode = listNotesAdapter[position]
             myView.textView.text = myNode.nodeTitle
             myView.textView2.text = myNode.nodeDesc
-
+            myView.ivDelete.setOnClickListener(View.OnClickListener {
+                var dbManager = DBManager(this.context!!)
+                val selectionArgs = arrayOf(myNode.nodeID.toString())
+                dbManager.Delete("ID = ?", selectionArgs)
+                LoadQuery("%")
+            })
+            myView.ivEdit.setOnClickListener(View.OnClickListener {
+                var intent = Intent(this.context, AddNotesActivity::class.java)
+                intent.putExtra("ID",myNode.nodeID)
+                intent.putExtra("name",myNode.nodeTitle)
+                intent.putExtra("des",myNode.nodeDesc)
+                startActivity(intent)
+            })
             return myView
         }
 

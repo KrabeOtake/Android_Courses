@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PockemonAndroid.iml" filepath="$PROJECT_DIR$/PockemonAndroid.iml" />
+      <module fileurl="file://E:\Android_Courses\Android_Courses\CompleteKotlinAndroid\PockemonAndroid\PockemonAndroid.iml" filepath="E:\Android_Courses\Android_Courses\CompleteKotlinAndroid\PockemonAndroid\PockemonAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://E:\Android_Courses\Android_Courses\CompleteKotlinAndroid\PockemonAndroid\app\app.iml" filepath="E:\Android_Courses\Android_Courses\CompleteKotlinAndroid\PockemonAndroid\app\app.iml" />
     </modules>
   </component>
 </project>

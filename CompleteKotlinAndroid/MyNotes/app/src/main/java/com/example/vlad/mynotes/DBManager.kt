@@ -54,4 +54,15 @@ class DBManager{
         val cursor = qb.query(sqlDB, projection, selection, selectionArgs, null, null, sorOrder)
         return cursor
     }
+
+    fun Delete(selection: String, selectionArgs: Array<String>):Int{
+        val count = sqlDB!!.delete(dbTables, selection,selectionArgs)
+        return count
+    }
+
+    fun Update(values:ContentValues,selection:String,selectionargs:Array<String>):Int{
+
+        val count=sqlDB!!.update(dbTables,values,selection,selectionargs)
+        return count
+    }
 }
