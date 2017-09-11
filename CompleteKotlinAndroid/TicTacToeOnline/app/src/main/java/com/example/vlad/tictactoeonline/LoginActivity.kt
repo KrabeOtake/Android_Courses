@@ -6,12 +6,16 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
 
     private var mAuth: FirebaseAuth? = null
+
+    private var databas = FirebaseDatabase.getInstance()
+    private var myRef = databas.reference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -47,6 +51,7 @@ class LoginActivity : AppCompatActivity() {
 
         if(currentUser!=null) {
 
+            myRef.child("Users").child(currentUser.uid).child(currentUser.email)
 
             var intent = Intent(this, MainActivity::class.java)
             intent.putExtra("email", currentUser.email)
