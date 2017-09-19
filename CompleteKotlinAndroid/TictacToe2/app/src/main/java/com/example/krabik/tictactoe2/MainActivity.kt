@@ -25,7 +25,7 @@ class MainActivity : android.support.v7.app.AppCompatActivity() {
 
         var b:Bundle=intent.extras
         myEmail=b.getString("email")
-        //IncommingCalls()
+        IncommingCalls()
     }
 
 
@@ -180,20 +180,39 @@ class MainActivity : android.support.v7.app.AppCompatActivity() {
         var userDemail=etEmail.text.toString()
 
         myRef.child("Users").child(SplitString(userDemail)).child("Request").push().setValue(myEmail)
+        PlayerOnline(SplitString(myEmail!!) + SplitString(userDemail))
 
-
-        PlayerOnline(SplitString(myEmail!!)+ SplitString(userDemail)) // husseinjena
-        PlayerSymbol="X"
     }
 
     protected fun buAcceptEvent(view:android.view.View){
         var userDemail=etEmail.text.toString()
-        myRef.child("Users").child( SplitString(userDemail)).child("Request").push().setValue(myEmail)
+        myRef.child("Users").child(SplitString(userDemail)).child("Request").push().setValue(myEmail)
+        PlayerOnline(SplitString(userDemail) + SplitString(myEmail!!))
+    }
 
+    fun IncommingCalls(){
+        myRef.child("Users").child(SplitString(myEmail!!)).child("Request")
+                .addValueEventListener(object:ValueEventListener{
+                    override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                        try{
+                            val td = dataSnapshot!!.value as HashMap<String, Any>
+                            if(td!=null){
+                                var value:String
+                                for (key in td.keys){
+                                    value = td[key] as String
+                                    etEmail.setText(value)
+                                    myRef.child("Users").child(SplitString(myEmail!!)).child("Request").setValue(true)
 
-        PlayerOnline(SplitString(userDemail)+SplitString(myEmail!!)) //husseinjena
-        PlayerSymbol="O"
+                                    break
+                                }
+                            }
+                        }catch (ex:Exception){}
+                    }
 
+                    override fun onCancelled(p0: DatabaseError?) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+                })
     }
 
     var sessionID:String?=null
@@ -239,46 +258,6 @@ class MainActivity : android.support.v7.app.AppCompatActivity() {
     }
 
 
-/*
-    var number=0
-    fun IncommingCalls(){
-        myRef.child("Users").child(SplitString(myEmail!!)).child("Request")
-                .addValueEventListener(object:ValueEventListener{
-
-                    override fun onDataChange(dataSnapshot: DataSnapshot?) {
-
-
-
-                        try{
-                            val td=dataSnapshot!!.value as HashMap<String,Any>
-                            if(td!=null){
-
-                                var value:String
-                                for (key in td.keys){
-                                    value= td[key] as String
-                                    etEmail.setText(value)
-
-                                    val notifyme=Notifications()
-                                    notifyme.Notify(applicationContext,value + " want to play tic tac toy",number)
-                                    number++
-                                    myRef.child("Users").child(SplitString(myEmail!!)).child("Request").setValue(true)
-
-                                    break
-
-                                }
-
-                            }
-
-                        }catch (ex:Exception){}
-                    }
-
-                    override fun onCancelled(p0: DatabaseError?) {
-
-                    }
-
-                })
-    }
-*/
 
     fun  SplitString(str:String):String{
         var split=str.split("@")
